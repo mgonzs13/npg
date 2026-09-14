@@ -36,7 +36,6 @@
 #include <vector>
 using std::vector;
 using std::set;
-using std::iterator;
 
 using namespace TIM;
 using VAL::pddl_type;
@@ -235,8 +234,14 @@ private:
 public:
 	ValuesUnion(const ValuesUnion & v1,const ValuesUnion & v2);
 	ValuesUnion() : valuesUnion() {};
-	class const_iterator : public iterator<Values,size_t> {
+	class const_iterator {
 	private:
+		typedef std::forward_iterator_tag iterator_category;
+		typedef const Values value_type;
+		typedef ptrdiff_t difference_type;
+		typedef const Values * pointer;
+		typedef const Values & reference;
+
 		typedef vector<pair<const PropertyState*,Values> >::const_iterator CI;
 		CI i;
 	public:

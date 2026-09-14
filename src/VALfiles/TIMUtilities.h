@@ -32,8 +32,6 @@
 
 
 using std::ostream;
-using std::iterator;
-
 namespace VAL {
 class pddl_type;
 };
@@ -54,15 +52,13 @@ struct ptrwriter
 namespace TIM {
 
 template<class TI>
-struct typeTransformer : 
-	public 
-#ifndef OLDCOMPILER
-			std::iterator
-#endif
-#ifdef OLDCOMPILER
-			std::forward_iterator
-#endif
-					<typename std::iterator_traits<TI>::iterator_category,VAL::pddl_type *>{
+struct typeTransformer {
+	typedef typename std::iterator_traits<TI>::iterator_category iterator_category;
+	typedef VAL::pddl_type * value_type;
+	typedef ptrdiff_t difference_type;
+	typedef VAL::pddl_type ** pointer;
+	typedef VAL::pddl_type * reference;
+
 	TI ti;
 	int arg;
 	const VAL::pddl_type * pt;

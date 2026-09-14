@@ -45,9 +45,6 @@ using std::make_pair;
 using std::max;
 using std::min;
 using std::for_each;
-using std::bind2nd;
-using std::not1;
-using std::mem_fun;
 
 
 namespace TIM {
@@ -289,7 +286,10 @@ public:
 	{
 		vector<Property *> props;
 		transform(s,e,inserter(props,props.begin()),
-					bind2nd(mem_fun(&Property::getBaseProperty),pt));
+					[pt](Property * property)
+					{
+						return property->getBaseProperty(pt);
+					});
 		return retrieve(tan,props.begin(),props.end());
 	};
 	
@@ -944,11 +944,17 @@ public:
 		for_each(propspaces.begin(),propspaces.end(),&sortObjects);
 		vector<PropertySpace*>::iterator a = 
 			partition(propspaces.begin(),propspaces.end(),
-					mem_fun(&PropertySpace::isState));		
+					[](PropertySpace * propertySpace)
+					{
+						return propertySpace->isState();
+					});		
 		copy(a,propspaces.end(),inserter(attrspaces,attrspaces.begin()));
 		propspaces.erase(a,propspaces.end());
 		a = partition(propspaces.begin(),propspaces.end(),
-					not1(mem_fun(&PropertySpace::isStatic)));
+					[](PropertySpace * propertySpace)
+					{
+						return !propertySpace->isStatic();
+					});
 		copy(a,propspaces.end(),inserter(staticspaces,staticspaces.end()));
 		propspaces.erase(a,propspaces.end());
 

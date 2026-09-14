@@ -62,8 +62,6 @@ using std::sort;
 using std::find_if;
 using std::copy;
 using std::for_each;
-using std::bind1st;
-using std::mem_fun;
 
 //#define vector std::vector
 //#define map std::map
@@ -77,7 +75,7 @@ Happening::Happening(Validator * v,const vector<pair<double,Action*> > & as,doub
 	time = as.begin()->first;
 	afterPlan = time > timeEndPlan;
 	std::transform(as.begin(),as.end(),std::back_inserter(actions),select2nd<pair<double,Action*> >());
-	realHappening = (find_if(actions.begin(),actions.end(),mem_fun(&Action::isRegAction)) != actions.end());
+	realHappening = (find_if(actions.begin(), actions.end(), [](const Action * action) { return action->isRegAction(); }) != actions.end());
   
 };
 
@@ -86,7 +84,7 @@ Happening::Happening(Validator * v,double timeToExecute,const vector<pair<double
 	eventHappening(false), realHappening(false), afterPlan(false)
 {
 	std::transform(as.begin(),as.end(),std::back_inserter(actions),select2nd<pair<double,Action*> >());
-	realHappening = (find_if(actions.begin(),actions.end(),mem_fun(&Action::isRegAction)) != actions.end());
+	realHappening = (find_if(actions.begin(), actions.end(), [](const Action * action) { return action->isRegAction(); }) != actions.end());
 };
 
 

@@ -150,7 +150,7 @@ public:
 
 };
 
-struct TRcompare : public std::binary_function<const TypeRef*,const TypeRef*,bool> {
+struct TRcompare {
 
 	bool operator()(const TypeRef * t1,const TypeRef * t2) const
 	{

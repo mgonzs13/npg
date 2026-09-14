@@ -140,8 +140,12 @@ struct checkNotApplicable {
 
 	bool operator()(Property * p)
 	{
+		TIMobjectSymbol * const object = tos;
 		return find_if(p->begin(),p->end(),
-				not1(bind2nd(mem_fun(&PropertySpace::contains),tos)))
+				[object](PropertySpace * propertySpace)
+				{
+					return !propertySpace->contains(object);
+				})
 						!= p->end();
 	};
 };
@@ -721,7 +725,10 @@ void ProtoRule::addRules(TRules & trules)
 				trules.push_back(new TransitionRule(tan,op,var,en,x,x,opt));
 			};
 			enablers.insert(find_if(enablers.begin(),enablers.end(),
-										bind2nd(greater<Property*>(),p)),p);
+									[p](Property * candidate)
+									{
+										return candidate > p;
+									}),p);
 		};
 			
 		if(adds.size() > is.size() || dels.size() > is.size())
@@ -1345,6 +1352,12 @@ void doExamine::operator()(PropertySpace * p)
 
 template<class TI>
 struct getConditionally {
+	typedef std::input_iterator_tag iterator_category;
+	typedef Property * value_type;
+	typedef ptrdiff_t difference_type;
+	typedef Property ** pointer;
+	typedef Property * reference;
+
 	bool cond;
 	Property * prop;
 	TI pit;
@@ -1356,7 +1369,12 @@ struct getConditionally {
 		while(pit != terminus && (c?(*pit == prop):(*pit != prop))) ++pit;
 	};
 
-	Property * operator*() 
+	Property * operator*() const
+	{
+		return *pit;
+	};
+
+	Property * operator->() const
 	{
 		return *pit;
 	};
@@ -1366,6 +1384,13 @@ struct getConditionally {
 		++pit;
 		while(pit != terminus && (cond?(*pit == prop):(*pit != prop))) ++pit;
 		return *this;
+	};
+
+	getConditionally<TI> operator++(int)
+	{
+		getConditionally<TI> old(*this);
+		++(*this);
+		return old;
 	};
 
 	bool operator==(const getConditionally<TI> & x) const

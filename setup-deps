@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+# Install the build dependencies of COLIN in a user-local prefix without
+# requiring root. The prefix is picked up automatically by run-cmake-release.
+#
+# Only needed on systems where the Coin-OR development packages and bison
+# are not installed system-wide (e.g. `sudo apt-get install bison flex
+# coinor-libclp-dev coinor-libcbc-dev coinor-libcoinutils-dev
+# coinor-libosi-dev coinor-libcgl-dev libbz2-dev zlib1g-dev`).
+#
+set -e
+
+PREFIX="${NPG_DEPS_PREFIX:-$HOME/.local/share/npg-deps}"
+
+if ! command -v apt-get >/dev/null 2>&1 || ! command -v dpkg-deb >/dev/null 2>&1; then
+    echo "setup-deps needs apt-get and dpkg-deb; install the packages listed" >&2
+    echo "in the README instead." >&2
+    exit 1
+fi
+
+MULTIARCH="$(dpkg-architecture -qDEB_HOST_MULTIARCH 2>/dev/null || echo x86_64-linux-gnu)"
+DEB_DIR="$(mktemp -d)"
+trap 'rm -rf "$DEB_DIR"' EXIT
+
+DEV_PACKAGES="bison flex libfl-dev m4 zlib1g-dev libbz2-dev \
+              coinor-libclp-dev coinor-libcbc-dev coinor-libcoinutils-dev \
+              coinor-libosi-dev coinor-libcgl-dev"
+
+RUNTIME_PACKAGES="coinor-libclp1 coinor-libcoinutils3v5 \
+                  coinor-libosi1v5 coinor-libcgl1"
+
+cd "$DEB_DIR"
+
+# The CBC runtime package is named coinor-libcbc3.1 on Ubuntu 24.04 and
+# coinor-libcbc3 on older releases.
+CBC_RUNTIME="coinor-libcbc3.1"
+if ! apt-get download "$CBC_RUNTIME" >/dev/null 2>&1; then
+    CBC_RUNTIME="coinor-libcbc3"
+fi
+
+apt-get download $DEV_PACKAGES $RUNTIME_PACKAGES "$CBC_RUNTIME"
+
+mkdir -p "$PREFIX"
+for deb in *.deb; do
+    dpkg-deb -x "$deb" "$PREFIX"
+done
+
+# Point the development symlinks (libClp.so -> libClp.so.1) at the extracted
+# run-time libraries, in case the run-time packages were not downloaded.
+if [ -d "$PREFIX/usr/lib/$MULTIARCH" ]; then
+    for link in "$PREFIX/usr/lib/$MULTIARCH"/*.so; do
+        [ -e "$link" ] && continue
+        target="$(basename "$(readlink "$link")")"
+        if [ -e "/usr/lib/$MULTIARCH/$target" ]; then
+            ln -sf "/usr/lib/$MULTIARCH/$target" "$link"
+        fi
+    done
+fi
+
+echo "Dependencies installed in $PREFIX"

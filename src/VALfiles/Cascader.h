@@ -248,15 +248,16 @@ public:
 	class iterator;
 	friend class iterator;
 	
-	class iterator : public 
-#ifndef OLDCOMPILER
-						std::iterator
-#endif
-#ifdef OLDCOMPILER
-						std::forward_iterator
-#endif
-										<U *,size_t> {
+	class iterator {
+	public:
+		typedef std::forward_iterator_tag iterator_category;
+		typedef U * value_type;
+		typedef ptrdiff_t difference_type;
+		typedef U ** pointer;
+		typedef U * reference;
+
 	private:
+
 		CascadeMap * cmap;
 		bool done;
 		typename Cascader::iterator c;

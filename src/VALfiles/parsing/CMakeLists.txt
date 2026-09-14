@@ -8,6 +8,16 @@ if(NOT EXISTS ${BISON_EXECUTABLE})
 	message("Could not find bison executable.")
 endif(NOT EXISTS ${BISON_EXECUTABLE})
 
+# Support bison installed in a non-system prefix (e.g. the user-local
+# dependencies set up by setup-deps), where the compiled-in data directory
+# is not present.
+if(DEFINED ENV{BISON_PKGDATADIR})
+	set(BISON_COMMAND ${CMAKE_COMMAND} -E env
+		"BISON_PKGDATADIR=$ENV{BISON_PKGDATADIR}" ${BISON_EXECUTABLE})
+else()
+	set(BISON_COMMAND ${BISON_EXECUTABLE})
+endif()
+
 
 FIND_PROGRAM(FLEX_EXECUTABLE flex)
 
@@ -30,7 +40,7 @@ add_custom_command(
        OUTPUT
         ${CMAKE_CURRENT_BINARY_DIR}/pddl+.cpp
        COMMAND
-        ${BISON_EXECUTABLE}
+        ${BISON_COMMAND}
        ARGS
         ${CMAKE_CURRENT_SOURCE_DIR}/pddl+.yacc -o ${CMAKE_CURRENT_BINARY_DIR}/pddl+.cpp
        DEPENDS

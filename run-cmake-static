@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# Configure a statically linked release build (CLP backend) in static/.
+# Requires static versions of the Coin-OR libraries.
 
-cd static
-cmake -DSTATIC_COLIN=TRUE  -DCMAKE_BUILD_TYPE=Release ../src
+source "$(cd "$(dirname "$0")" && pwd)/common.sh"
+
+configure static -DSTATIC_COLIN=TRUE -DCMAKE_BUILD_TYPE=Release

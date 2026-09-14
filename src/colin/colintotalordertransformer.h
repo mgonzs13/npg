@@ -25,8 +25,8 @@
  ************************************************************************/
 
 
-#ifndef TOTALORDERTRANSFORMER_H
-#define TOTALORDERTRANSFORMER_H
+#ifndef COLINTOTALORDERTRANSFORMER_H
+#define COLINTOTALORDERTRANSFORMER_H
 
 #include "minimalstate.h"
 
@@ -82,4 +82,4 @@ public:
 
 }
 
-#endif              // TOTALORDERTRANSFORMER_H
+#endif              // COLINTOTALORDERTRANSFORMER_H

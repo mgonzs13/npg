@@ -8,10 +8,16 @@ endif (OSI_INCLUDES AND OSI_LIBRARIES)
 
 find_path(OSI_INCLUDES
   NAMES
+  OsiSolverInterface.hpp
+  coin/OsiSolverInterface.hpp
   coin/config_osi.h
   PATHS
   ${OSIDIR}/include
   ${INCLUDE_INSTALL_DIR}
+  /usr/include
+  /usr/local/include
+  PATH_SUFFIXES
+  coin
 )
 
 find_library(OSI_LIBRARIES

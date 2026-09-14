@@ -1,40 +1,34 @@
 #!/bin/bash
+#
+# Configure a statically linked release build against CLP and/or CPLEX in
+# static/. The defaults assume a 32-bit static CPLEX 12.1 and Concert 2.9
+# installation under $HOME/ilog. Set CPLEX, ILOCPLEX, CONCERT,
+# CPLEX_INCLUDES and CONCERT_INCLUDES to point at a different installation.
 
-export CPLEX="$HOME/ilog/cplex121/lib/x86_debian4.0_4.1/static_pic/libcplex.a"
+source "$(cd "$(dirname "$0")" && pwd)/common.sh"
 
-if [ ! -e "$CPLEX" ]; then
-    echo "$CPLEX is not the libcplex.a library file"
-    exit 1
-fi
+CPLEX="${CPLEX:-$HOME/ilog/cplex121/lib/x86_debian4.0_4.1/static_pic/libcplex.a}"
+ILOCPLEX="${ILOCPLEX:-$HOME/ilog/cplex121/lib/x86_debian4.0_4.1/static_pic/libilocplex.a}"
+CONCERT="${CONCERT:-$HOME/ilog/concert29/lib/x86_debian4.0_4.1/static_pic/libconcert.a}"
+CPLEX_INCLUDES="${CPLEX_INCLUDES:-$HOME/ilog/cplex121/include}"
+CONCERT_INCLUDES="${CONCERT_INCLUDES:-$HOME/ilog/concert29/include}"
 
-export ILOCPLEX="$HOME/ilog/cplex121/lib/x86_debian4.0_4.1/static_pic/libilocplex.a"
+require_file() {
+    if [ ! -e "$1" ]; then
+        echo "$2 does not point at a valid file: $1" >&2
+        exit 1
+    fi
+}
 
-if [ ! -e "$ILOCPLEX" ]; then
-    echo "$ILOCPLEX is not the libilocplex.a library file"
-    exit 1
-fi
+require_file "$CPLEX" "CPLEX (libcplex.a)"
+require_file "$ILOCPLEX" "ILOCPLEX (libilocplex.a)"
+require_file "$CONCERT" "CONCERT (libconcert.a)"
+require_file "$CPLEX_INCLUDES/ilcplex/ilocplex.h" "CPLEX_INCLUDES"
+require_file "$CONCERT_INCLUDES/ilconcert/iloenv.h" "CONCERT_INCLUDES"
 
-export CONCERT="$HOME/ilog/concert29/lib/x86_debian4.0_4.1/static_pic/libconcert.a"
-
-if [ ! -e "$CONCERT" ]; then
-    echo "$CONCERT is not the libconcert.a library file"
-    exit 1
-fi
-
-export CPLEX_INCLUDES="$HOME/ilog/cplex121/include"
-
-if [ ! -e "$CPLEX_INCLUDES/ilcplex/ilocplex.h" ]; then
-    echo "$CPLEX_INCLUDES does not point to a path containing ilcplex/ilocplex.h"
-    exit 1
-fi
-
-
-export CONCERT_INCLUDES="$HOME/ilog/concert29/include"
-
-if [ ! -e "$CONCERT_INCLUDES/ilconcert/iloenv.h" ]; then
-    echo "$CONCERT_INCLUDES does not point to a path containing ilconcert/iloenv.h"
-    exit 1
-fi
-
-cd static
-cmake -DCMAKE_VERBOSE_MAKEFILE=TRUE -DSTATIC_COLIN=TRUE  -DCMAKE_BUILD_TYPE=Release -DCPLEX="$CPLEX" -DILOCPLEX="$ILOCPLEX" -DCONCERT="$CONCERT" -DCPLEX_INCLUDES="$CPLEX_INCLUDES" -DCONCERT_INCLUDES="$CONCERT_INCLUDES" ../src
+configure static -DSTATIC_COLIN=TRUE -DCMAKE_BUILD_TYPE=Release \
+    -DCPLEX="$CPLEX" \
+    -DILOCPLEX="$ILOCPLEX" \
+    -DCONCERT="$CONCERT" \
+    -DCPLEX_INCLUDES="$CPLEX_INCLUDES" \
+    -DCONCERT_INCLUDES="$CONCERT_INCLUDES"

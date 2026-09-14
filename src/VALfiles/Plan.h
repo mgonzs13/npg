@@ -343,15 +343,15 @@ public:
 
 	friend class const_iterator;
 
-	class const_iterator : public 
-#ifndef OLDCOMPILER
-		std::iterator
-#endif
-#ifdef OLDCOMPILER
-		std::forward_iterator
-#endif
-				<std::input_iterator_tag,const Happening *>
+	class const_iterator
 	{
+	public:
+		typedef std::input_iterator_tag iterator_category;
+		typedef const Happening * value_type;
+		typedef ptrdiff_t difference_type;
+		typedef const Happening ** pointer;
+		typedef const Happening * reference;
+
 	private:
 		int pos;
 		const Plan * myPlan;

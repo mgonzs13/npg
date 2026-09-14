@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Configure an optimised release build (CLP backend) in release/.
 
-cd release
-cmake -DCMAKE_BUILD_TYPE=Release ../src
+source "$(cd "$(dirname "$0")" && pwd)/common.sh"
+
+configure release -DCMAKE_BUILD_TYPE=Release
