@@ -27,6 +27,7 @@
 #ifndef __TOFUNCTION
 #define __TOFUNCTION
 
+#include <cstddef>
 #include <iostream>
 #include <ptree.h>
 #include "TIM.h"

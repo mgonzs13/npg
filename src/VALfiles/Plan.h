@@ -44,6 +44,7 @@
   Strathclyde Planning Group
   http://planning.cis.strath.ac.uk
  ----------------------------------------------------------------------------*/
+#include <cstddef>
 #include <vector>
 #include <functional>
 #include <algorithm>

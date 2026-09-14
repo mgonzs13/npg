@@ -27,23 +27,44 @@ DEV_PACKAGES="bison flex libfl-dev m4 zlib1g-dev libbz2-dev \
               coinor-libosi-dev coinor-libcgl-dev"
 
 RUNTIME_PACKAGES="coinor-libclp1 coinor-libcoinutils3v5 \
-                  coinor-libosi1v5 coinor-libcgl1"
+                  coinor-libosi1v5 coinor-libcgl1 libsigsegv2 \
+                  liblapack3 libblas3 libquadmath0"
 
 cd "$DEB_DIR"
 
-# The CBC runtime package is named coinor-libcbc3.1 on Ubuntu 24.04 and
-# coinor-libcbc3 on older releases.
+# Runtime package names vary between releases: coinor-libcbc3.1 on Ubuntu
+# 24.04 vs coinor-libcbc3 on older releases, and libgfortran5 on 20.04 and
+# newer vs libgfortran3 on 16.04/18.04.
 CBC_RUNTIME="coinor-libcbc3.1"
 if ! apt-get download "$CBC_RUNTIME" >/dev/null 2>&1; then
     CBC_RUNTIME="coinor-libcbc3"
 fi
 
-apt-get download $DEV_PACKAGES $RUNTIME_PACKAGES "$CBC_RUNTIME"
+GFORTRAN_RUNTIME="libgfortran5"
+if ! apt-get download "$GFORTRAN_RUNTIME" >/dev/null 2>&1; then
+    GFORTRAN_RUNTIME="libgfortran3"
+fi
+
+apt-get download $DEV_PACKAGES $RUNTIME_PACKAGES "$CBC_RUNTIME" "$GFORTRAN_RUNTIME"
 
 mkdir -p "$PREFIX"
 for deb in *.deb; do
     dpkg-deb -x "$deb" "$PREFIX"
 done
+
+# Some releases install LAPACK/BLAS (dependencies of CoinUtils) in their
+# own subdirectories; link them into the multiarch directory so the
+# linker finds everything through a single path.
+if [ -d "$PREFIX/usr/lib/$MULTIARCH" ]; then
+    for libdir in lapack libblas; do
+        if [ -d "$PREFIX/usr/lib/$libdir" ]; then
+            for lib in "$PREFIX/usr/lib/$libdir"/*.so*; do
+                [ -e "$lib" ] || continue
+                ln -sf "$lib" "$PREFIX/usr/lib/$MULTIARCH/$(basename "$lib")"
+            done
+        fi
+    done
+fi
 
 # Point the development symlinks (libClp.so -> libClp.so.1) at the extracted
 # run-time libraries, in case the run-time packages were not downloaded.

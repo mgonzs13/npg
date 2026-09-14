@@ -27,6 +27,7 @@
 #ifndef __SASACTION
 #define __SASACTION
 
+#include <cstddef>
 #include "ToFunction.h"
 #include <vector>
 #include <map>

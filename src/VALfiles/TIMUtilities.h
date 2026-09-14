@@ -27,6 +27,7 @@
 #ifndef __TIMUTILS
 #define __TIMUTILS
 
+#include <cstddef>
 #include <iostream>
 #include <iterator>
 

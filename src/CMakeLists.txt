@@ -5,6 +5,8 @@ endif(COMMAND cmake_policy)
 
 project(buildroot)
 
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+
 set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
 
 set(CMAKE_CXX_FLAGS_PROFILE "-g3 -pg -O  -fprofile-arcs")

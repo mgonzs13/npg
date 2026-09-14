@@ -26,6 +26,7 @@
 
 #ifndef __INSTANTIATION
 #define __INSTANTIATION
+#include <cstddef>
 #include <vector>
 #include <map>
 #include "FastEnvironment.h"

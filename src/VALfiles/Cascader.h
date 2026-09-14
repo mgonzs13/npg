@@ -27,6 +27,7 @@
 #ifndef __CASCADER
 #define __CASCADER
 
+#include <cstddef>
 #include <map>
 #include <iostream>
 

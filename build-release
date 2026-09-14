@@ -5,6 +5,7 @@ set -e
 source "$(cd "$(dirname "$0")" && pwd)/common.sh"
 
 require_configured release
+deps_env
 cd "$SCRIPT_DIR/release"
 
 build_target parser 1

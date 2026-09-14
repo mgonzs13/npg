@@ -27,6 +27,7 @@
 #ifndef SOLVER_H
 #define SOLVER_H
 
+#include <cstddef>
 #include <string>
 #include <vector>
 #include <utility>

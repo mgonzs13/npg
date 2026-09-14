@@ -27,6 +27,7 @@
 #ifndef __TIMSUPPORT
 #define __TIMSUPPORT
 
+#include <cstddef>
 #include <algorithm>
 #include <iostream>
 #include <set>
