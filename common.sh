@@ -49,7 +49,7 @@ deps_cmake_args() {
         DEPS_CMAKE_ARGS+=("-DCMAKE_PREFIX_PATH=$DEPS_PREFIX/usr")
         DEPS_CMAKE_ARGS+=("-DCMAKE_INCLUDE_PATH=$DEPS_PREFIX/usr/include")
         DEPS_CMAKE_ARGS+=("-DCMAKE_LIBRARY_PATH=$DEPS_PREFIX/usr/lib/$MULTIARCH")
-        DEPS_CMAKE_ARGS+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS:-} -Wl,-rpath-link,$DEPS_PREFIX/usr/lib/$MULTIARCH")
+        DEPS_CMAKE_ARGS+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS:-} -Wl,-rpath-link,$DEPS_PREFIX/usr/lib/$MULTIARCH -Wl,--disable-new-dtags -Wl,-rpath,$DEPS_PREFIX/usr/lib/$MULTIARCH")
     fi
 }
 
